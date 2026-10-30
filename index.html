@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Goat Program</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="wrap" id="app"></div>
+  <script src="data.js"></script>
+  <script src="month-01.js"></script>
+  <script src="month-02.js"></script>
+  <script src="month-03.js"></script>
+  <script src="month-04.js"></script>
+  <script src="month-05.js"></script>
+  <script src="month-06.js"></script>
+  <script src="wisdom-map.js"></script>
+  <script src="scriptures.js"></script>
+  <script src="wisdom-cards.js"></script>
+  <script src="mascots.js"></script>
+  <script src="heroes.js"></script>
+  <script>
+    const C = window.CURRICULUM;
+    const MONTHS = window.MONTHS;
+    const app = document.getElementById('app');
+
+    const parseDate = s => new Date(s + 'T00:00:00');
+    const today = () => {
+      const override = new URLSearchParams(location.search).get('today');
+      return override ? parseDate(override) : new Date(new Date().toDateString());
+    };
+    const fmtDay = s => parseDate(s).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+
+    function monthState(m) {
+      const t = today();
+      if (t < parseDate(m.start)) return 'before';
+      if (t > parseDate(m.end)) return 'after';
+      return 'during';
+    }
+
+    function currentMonthNum() {
+      const t = today();
+      const started = Object.values(MONTHS).filter(m => t >= parseDate(m.start)).map(m => m.n);
+      return started.length ? Math.max(...started) : 1;
+    }
+
+    function currentWeek(m) {
+      const t = today();
+      return m.weeks.find(w => t >= parseDate(w.start) && t <= parseDate(w.end))?.n ?? null;
+    }
+
+    const BRANCH_COLOR = C.branchColors;
+    const esc = t => String(t).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
+
+    const normRef = r => String(r).replace(/[–—]/g, '-').replace(/^Doctrine and Covenants/, 'D&C').trim();
+
+    function scriptureBoxes(m) {
+      const S = window.SCRIPTURES || {};
+      return m.scriptures.map(s => {
+        let text = S[normRef(s.ref)] || s.note;
+        if (S[normRef(s.ref)]) {
+          text = text.replace(/[:;,]\s*$/, '…');
+          if (/^[a-z]/.test(text)) text = '…' + text;
+        }
+        return `<figure class="scripture${S[normRef(s.ref)] ? '' : ' no-text'}"><blockquote>${esc(text)}</blockquote><figcaption>${esc(s.ref)}</figcaption></figure>`;
+      }).join('');
+    }
+
+    function wisdomHtml(m) {
+      const cards = WisdomCards.html(m);
+      if (!cards) return '';
+      return `<h3 style="margin-top:1rem">The wisdom behind this month</h3>
+        <p class="muted" style="font-size:0.9rem">Tap a card to flip it.</p>${cards}`;
+    }
+
+    function heroHtml(m) {
+      const h = m.hero;
+      if (!h) return '';
+      return `
+        <div class="hero-card ${h.art && window.Hero && Hero.has(h.art) ? 'has-art' : ''}">
+          ${h.art && window.Hero && Hero.has(h.art) ? `<div class="hero-art-wrap">${Hero.svg(h.art)}</div>` : ''}
+          <div class="hero-text">
+            <div class="label">Hero of the month</div>
+            <div class="title">${esc(h.name)} <span class="muted">${esc(h.source || '')}</span></div>
+            <p>${esc(h.lesson)}</p>
+            ${h.quote ? `<div class="t-quote">“${esc(h.quote)}”<span>${esc(h.quoteBy || '')}</span></div>` : ''}
+          </div>
+        </div>`;
+    }
+
+    function roadmapHtml(cur) {
+      return C.chapters.map(ch => `
+        <div class="chapter-title">${ch.title}</div>
+        <div class="roadmap">
+          ${C.roadmap.filter(r => r.ch === ch.id).map(r => {
+            if (r.isBreak) return `
+              <div class="rm-item break"><div class="num">~</div><div><div class="name">${r.theme}</div><div class="when">${r.when}</div></div><div class="tag">Break</div></div>`;
+            const m = MONTHS[r.n];
+            const tag = !m ? 'Coming soon' : (r.n === cur ? 'Now' : (monthState(m) === 'before' ? 'Ready' : 'Done'));
+            const cls = !m ? 'soon' : (r.n === cur ? 'live' : 'ready');
+            return `
+              <div class="rm-item ${cls}">
+                <div class="num">${r.n}</div>
+                <div><div class="name">${r.theme}</div><div class="when">${r.when}</div></div>
+                <div class="tag">${tag}</div>
+              </div>`;
+          }).join('')}
+        </div>`).join('');
+    }
+
+    function bannerText(m, state) {
+      if (state === 'before') return `Month ${m.n} starts on ${fmtDay(m.start)}. Take a look around so you know what's coming!`;
+      if (state === 'after') return `Month ${m.n} has wrapped up. Finish anything that's left.`;
+      return '';
+    }
+
+    function heroSay(k, m, state, cw) {
+      if (state === 'before') return `Hi ${k.name}! Month ${m.n} starts ${parseDate(m.start).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}. Look around and see what's coming.`;
+      if (state === 'after') return `Great month, ${k.name}! Finish anything left, then get ready for what's next.`;
+      const w = m.weeks.find(x => x.n === cw);
+      return w ? `Week ${w.n}: ${w.title}. You've got this, ${k.name}!` : `Keep going, ${k.name}!`;
+    }
+
+    function renderHome() {
+      document.title = C.programName;
+      const cur = currentMonthNum();
+      app.innerHTML = `
+        <header class="hero">
+          <div class="hero-goat">${Mascot.svg('goat')}</div>
+          <h1 class="title">The <span>Goat</span> Program</h1>
+          <p class="tagline">Your path to Greatness</p>
+        </header>
+
+        <div class="kid-cards">
+          ${Object.values(C.kids).map(k => `
+            <a class="kid-card" href="#/kid/${k.id}" style="--accent:${k.accent}; --k-soft:${k.soft}">
+              <div class="mascot-wrap">${Mascot.svg(k.id)}</div>
+              <h2>${k.name}</h2>
+              <p>${k.tagline}</p>
+              <div class="hat-hint">Tap the hat to change it!</div>
+              <div class="go">Open my path →</div>
+            </a>`).join('')}
+        </div>
+
+        <div class="section-title">The 18-month path</div>
+        ${roadmapHtml(cur)}
+        <p class="footnote">Progress isn't saved yet. That's coming next.</p>
+      `;
+    }
+
+    function renderKid(id, monthNum) {
+      const base = C.kids[id];
+      if (!base) { location.hash = '#/'; return; }
+      const n = MONTHS[monthNum] ? monthNum : currentMonthNum();
+      const M = MONTHS[n];
+      const k = { ...base, ...M.kids[id] };
+      document.title = `${k.name} · ${C.programName}`;
+      const state = monthState(M);
+      const cw = currentWeek(M);
+      const banner = bannerText(M, state);
+      const ch = k.challenge;
+      const extra = M.extra;
+
+      const weekHtml = M.weeks.map(w => {
+        const tasks = k.weeks[w.n];
+        const pick = k.menu && tasks.length >= 4;
+        return `
+          <div class="week ${cw === w.n ? 'current' : ''}">
+            <div class="week-head">
+              <div class="week-num">${w.n}</div>
+              <div><div class="t">${w.title}</div><div class="d">${w.dates}</div></div>
+              ${w.step ? `<span class="step">${w.step}</span>` : ''}
+              ${cw === w.n ? '<span class="now">This week</span>' : ''}
+            </div>
+            <div class="week-body">
+              <div class="theme-line">${w.theme}</div>
+              ${pick ? `<div class="pick-note">Pick any 3 of these ${tasks.length}. The last one is yours to make up.</div>` : ''}
+              <ul class="tasks">
+                ${tasks.map((t, i) => `
+                  <li class="task">
+                    <input type="checkbox" id="m${n}w${w.n}t${i}" />
+                    <label for="m${n}w${w.n}t${i}">${t}</label>
+                  </li>`).join('')}
+              </ul>
+              ${(() => {
+                const ci = M.checkins[w.n - 1];
+                if (!ci) return '';
+                return `<ul class="tasks tasks-ci">
+                  <li class="task task-ci">
+                    <input type="checkbox" id="m${n}w${w.n}ci" />
+                    <label for="m${n}w${w.n}ci"><b>Check-in with a parent${k.menu ? ' (your call)' : ''}</b><span>${ci.label} · ${ci.topic} · <a href="#" data-jump="checkins">see the questions</a></span></label>
+                  </li>
+                </ul>`;
+              })()}
+              <details class="family">
+                <summary>Family extras (optional)</summary>
+                <ul>${w.family.map(f => `<li>${f}</li>`).join('')}</ul>
+              </details>
+            </div>
+          </div>`;
+      }).join('');
+
+      app.style.setProperty('--accent', k.accent);
+      app.style.setProperty('--soft', k.soft);
+
+      app.innerHTML = `
+        <div class="topbar">
+          <a class="back" href="#/">← Everyone</a>
+        </div>
+
+        <div class="kid-hero">
+          <div class="hero-mascot">${Mascot.svg(k.id)}</div>
+          <div class="bubble">
+            <h1>${k.name}'s Path</h1>
+            <p class="say">${heroSay(k, M, state, cw)}</p>
+            <p class="hat-line">Tap my hat to change it! Now wearing: <span data-hat-name="${k.id}">${Mascot.hatName(k.id)}</span></p>
+          </div>
+        </div>
+
+        <div class="months" role="tablist">
+          ${C.roadmap.filter(r => !r.isBreak).map(r => MONTHS[r.n]
+            ? `<a class="chip ${r.n === n ? 'active' : ''}" href="#/kid/${k.id}/${r.n}" role="tab" aria-selected="${r.n === n}">Month ${r.n}</a>`
+            : `<button class="chip disabled" disabled title="Coming soon">Month ${r.n} · soon</button>`).join('')}
+        </div>
+
+        ${banner ? `<div class="banner now">${banner}</div>` : ''}
+
+        <nav class="nav">
+          <a href="#" data-jump="idea">The big idea</a>
+          <a href="#" data-jump="schedule">Schedule</a>
+          <a href="#" data-jump="challenge">Challenge</a>
+          <a href="#" data-jump="checkins">Check-ins</a>
+          <a href="#" data-jump="extra">${extra.navLabel}</a>
+          <a href="#" data-jump="badge">Badge</a>
+        </nav>
+
+        <section class="card" id="idea">
+          <h2>Month ${n}: ${M.title}</h2>
+          <p class="big-idea">${M.principle}</p>
+          <div class="ideas">
+            ${M.ideas.map(i => `<div class="idea"><strong>${i.title}</strong>${i.text}</div>`).join('')}
+          </div>
+          <h3>Scriptures to explore</h3>
+          <div class="scripture-grid">${scriptureBoxes(M)}</div>
+          ${wisdomHtml(M)}
+          ${heroHtml(M)}
+          <div class="two">
+            <div class="mini"><div class="label">Read together</div><div class="title">${M.familyRead.title}</div><div class="muted">${M.familyRead.by}. ${M.familyRead.note}</div></div>
+            <div class="mini"><div class="label">Your book</div><div class="title">${k.book.title}</div><div class="muted">${k.book.by}. ${k.book.alt}</div></div>
+            <div class="mini"><div class="label">Movie night</div><div class="title">${M.movie.title} (${M.movie.rating})</div><div class="muted">${M.movie.note}</div></div>
+          </div>
+        </section>
+
+        <section id="schedule">
+          <div class="section-title">Your schedule · ${M.dates}</div>
+          ${weekHtml}
+        </section>
+
+        <section class="card challenge" id="challenge">
+          <h2>Your challenge: ${ch.name}</h2>
+          <dl>
+            <div><dt>What you'll do</dt><dd>${ch.what}</dd></div>
+            <div><dt>How long</dt><dd>${ch.length}</dd></div>
+            <div><dt>The stretch</dt><dd>${ch.stretch}</dd></div>
+            <div><dt>When</dt><dd>${ch.date}</dd></div>
+          </dl>
+        </section>
+
+        <section class="card" id="checkins">
+          <h2>Check-ins with a parent</h2>
+          <p class="muted">Just the two of you, about 10–15 minutes. These are questions to think about. There are no wrong answers.</p>
+          ${M.checkins.map(c => `
+            <details class="checkin">
+              <summary>${c.n}. ${c.topic}<span>${c.label}</span></summary>
+              <ul>${c.questions.map(q => `<li>${q}</li>`).join('')}</ul>
+            </details>`).join('')}
+        </section>
+
+        <section class="card" id="extra">
+          <h2>${extra.title}</h2>
+          <p class="muted" style="margin-bottom:0.4rem">${extra.when}</p>
+          <p>${extra.text}</p>
+        </section>
+
+        <section class="card" id="badge">
+          <h2>🏅 Earn ${M.badge}</h2>
+          <ul class="tasks">
+            ${M.earn.map((e, i) => `
+              <li class="task"><input type="checkbox" id="m${n}e${i}" /><label for="m${n}e${i}">${e}</label></li>`).join('')}
+          </ul>
+          <p class="muted" style="margin-top:0.8rem">${M.ceremony}</p>
+        </section>
+
+        <p class="footnote">Progress isn't saved yet. That's coming next.</p>
+      `;
+      window.scrollTo(0, 0);
+    }
+
+    function route() {
+      const m = location.hash.match(/^#\/kid\/(\w+)(?:\/(\d+))?/);
+      app.removeAttribute('style');
+      if (m) renderKid(m[1], m[2] ? Number(m[2]) : currentMonthNum()); else renderHome();
+    }
+
+    document.addEventListener('click', e => {
+      const a = e.target.closest && e.target.closest('a[data-jump]');
+      if (!a) return;
+      e.preventDefault();
+      document.getElementById(a.dataset.jump)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    window.addEventListener('hashchange', route);
+    route();
+  </script>
+</body>
+</html>
