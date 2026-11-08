@@ -6,6 +6,7 @@ window.MONTHS[4] = {
   start: '2027-02-01',
   end: '2027-02-28',
   dates: 'Feb 1 – Feb 28',
+  contentFile: 'content/month-04-the-hard-thing.md',
   principle: 'I choose something hard, practice it a little every day, expect to want to quit, and finish what I start.',
   tactics: [
     { key: 'agy-hard', role: 'lead' },
@@ -19,6 +20,7 @@ window.MONTHS[4] = {
     lesson: "As a little girl Wilma had polio, and her leg was so weak that she wore a brace. People doubted she would ever run. She kept working at it a little every day, and at the 1960 Olympics she won three gold medals. A hard thing, done daily, changed her whole story. She is the girl in your family read-aloud, Wilma Unlimited.",
     quote: "Never underestimate the power of dreams and the influence of the human spirit.",
     quoteBy: "Wilma Rudolph (attributed)",
+    note: "The three gold medals and the polio are well documented. The quote is widely credited to her (a quote site cites a 1990 biography by Tom Biracree) but I could not find the original source, so it is shown as \"attributed.\" Check the leg brace and dates in Wilma Unlimited.",
   },
   ideas: [
     { title: 'Choose it.', text: 'A Hard Thing I pick myself is mine, and that makes it worth doing.' },
@@ -28,9 +30,9 @@ window.MONTHS[4] = {
   ],
   scriptures: [
     { ref: '1 Nephi 3:7', note: 'I will go and do the things which the Lord hath commanded.' },
-    { ref: '1 Nephi 17:8-18', note: 'Nephi is told to build a ship.' },
+    { ref: '1 Nephi 17:8-18', note: 'Nephi is told to build a ship (please verify the range).' },
     { ref: 'Colossians 3:23', note: 'Do your work heartily, as to the Lord.' },
-    { ref: 'Galatians 6:9', note: 'Do not grow weary in doing good.' },
+    { ref: 'Galatians 6:9', note: 'Do not grow weary in doing good (please verify).' },
   ],
   familyRead: { title: 'Wilma Unlimited', by: 'Kathleen Krull', note: 'A short picture-book biography of Wilma Rudolph, who wore a leg brace as a child and became a champion runner. Young for Duke and Indiana but short. Read it in Week 1. Alternates for the older kids: Hatchet (Duke), Anne of Green Gables (Indiana).' },
   movie: { title: 'Cool Runnings', rating: 'PG', note: 'Family movie night, Week 2 or 3. Four Jamaican athletes learn a hard sport fast. Mild language and a bar brawl, please preview. Alternate: Soul Surfer (PG, one intense shark attack scene).' },

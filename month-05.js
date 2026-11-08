@@ -6,6 +6,7 @@ window.MONTHS[5] = {
   start: '2027-03-01',
   end: '2027-03-31',
   dates: 'Mar 1 – Mar 31',
+  contentFile: 'content/month-05-comfortable-being-uncomfortable.md',
   principle: 'Discomfort is training, not danger. When I choose small, safe hard things on purpose, I find out I can handle more than I thought.',
   tactics: [
     { key: 'agy-hard', role: 'lead' },
@@ -19,6 +20,7 @@ window.MONTHS[5] = {
     lesson: "Frodo is a small, ordinary hobbit who has never walked far from home. He volunteers for a very long, very hard walk even though he does not know the way. He is not the strongest. He keeps going one step at a time, carrying something heavy. Your Long Walk works the same way.",
     quote: "I will take the Ring, though I do not know the way.",
     quoteBy: "Frodo, The Fellowship of the Ring",
+    note: "From Book 2, chapter 2 (The Council of Elrond). The wording matches several quote and summary sites; it was not checked against the printed book. The films are PG-13, so use the idea and the quote, not the film, for Monty and Rudy.",
   },
   ideas: [
     { title: 'Hard is not the same as harmful.', text: 'My brain says "stop" long before my body needs to. I can notice that and decide.' },
@@ -29,8 +31,8 @@ window.MONTHS[5] = {
   scriptures: [
     { ref: 'D&C 122:7-8', note: 'All these things shall give thee experience.' },
     { ref: '1 Corinthians 9:24-27', note: 'Training the body and running the race.' },
-    { ref: 'Luke 22:42', note: 'The Savior chose a hard thing for us (Gethsemane).' },
-    { ref: 'Isaiah 40:31', note: 'They shall walk, and not faint.' },
+    { ref: 'Luke 22:42', note: 'The Savior chose a hard thing for us (Gethsemane). Please verify.' },
+    { ref: 'Isaiah 40:31', note: 'They shall walk, and not faint. Please verify.' },
   ],
   familyRead: { title: "Shackleton's Journey", by: 'William Grill', note: "A large illustrated retelling of Shackleton's Antarctic expedition. Preview it (ice, hunger and the fate of the dogs). Aim to finish by Mar 21." },
   movie: { title: 'Cool Runnings', rating: 'PG', note: 'Family movie night, Week 2 or 3. A team chooses something very hard and keeps going. Mild language and brief violence. Please preview. Alternate for older kids: The Fellowship of the Ring (PG-13; preview first).' },

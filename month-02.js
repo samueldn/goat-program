@@ -6,6 +6,7 @@ window.MONTHS[2] = {
   start: '2026-12-01',
   end: '2026-12-31',
   dates: 'Dec 1 – Dec 31',
+  contentFile: 'content/month-02-unplugged-and-present.md',
   principle: 'My attention is mine to protect. Where I put it shows what I love.',
   ideas: [
     { title: 'Notice.', text: "Some apps and games are designed to keep me playing. When I notice how, I'm back in charge." },
@@ -73,6 +74,7 @@ window.MONTHS[2] = {
     lesson: "Oogway is the oldest and wisest master in the Valley of Peace, and he is never in a hurry. He knows the only moment you can actually live in is this one, so he gives it his full attention. That is what being present means: the people and the moment right in front of you.",
     quote: "Yesterday is history, tomorrow is a mystery, but today is a gift. That is why it is called the present.",
     quoteBy: "Master Oogway, Kung Fu Panda",
+    note: "The line is from the film (Oogway to Po). Wording varies a little between sources; it was checked on a fan wiki, not against the film script. Kung Fu Panda is rated PG for martial arts action, and Common Sense Media suggests ages 6 and up.",
   },
 
   kids: {

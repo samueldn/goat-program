@@ -1,5 +1,6 @@
 window.CURRICULUM = {
   "programName": "The Goat Program",
+  "guideUrl": "guide.html",
   "roadmap": [
     {
       "n": 1,
@@ -120,6 +121,7 @@ window.CURRICULUM = {
     "monty": {
       "id": "monty",
       "name": "Monty",
+      "age": 6,
       "emoji": "🦖",
       "accent": "#ea580c",
       "soft": "#fff1e6",
@@ -128,6 +130,7 @@ window.CURRICULUM = {
     "rudy": {
       "id": "rudy",
       "name": "Rudy",
+      "age": 8,
       "emoji": "🎮",
       "accent": "#16a34a",
       "soft": "#ecfdf3",
@@ -136,6 +139,7 @@ window.CURRICULUM = {
     "duke": {
       "id": "duke",
       "name": "Duke",
+      "age": 13,
       "emoji": "⚽",
       "accent": "#2563eb",
       "soft": "#eef4ff",
@@ -144,6 +148,7 @@ window.CURRICULUM = {
     "indiana": {
       "id": "indiana",
       "name": "Indiana",
+      "age": 12,
       "emoji": "🐴",
       "accent": "#9333ea",
       "soft": "#f6efff",

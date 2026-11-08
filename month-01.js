@@ -3,10 +3,10 @@ window.MONTHS[1] = {
   "n": 1,
   "title": "Who I Am",
   "badge": "The Roots Badge",
-  "start": "2026-11-01",
+  "start": "2026-11-08",
   "end": "2026-11-30",
-  "dates": "Nov 1 – Nov 30",
-  "principle": "I am known and loved. I am a child of God. I come from people, and I get to help write what happens next.",
+  "dates": "Nov 8 – Nov 30",
+  "principle": "Known. Loved. Rooted. Rising.",
   "ideas": [
     {
       "title": "I'm one of a kind.",
@@ -42,7 +42,7 @@ window.MONTHS[1] = {
   "familyRead": {
     "title": "The Wild Robot",
     "by": "Peter Brown",
-    "note": "A robot has to figure out who she is and where she belongs. Aim to finish by Nov 21."
+    "note": "A robot has to figure out who she is and where she belongs. Aim to finish by Nov 24, before the trip."
   },
   "movie": {
     "title": "Coco",
@@ -55,9 +55,9 @@ window.MONTHS[1] = {
       "step": "Learn",
       "title": "Known",
       "theme": "I'm one of a kind.",
-      "start": "2026-11-01",
-      "end": "2026-11-07",
-      "dates": "Nov 1–7",
+      "start": "2026-11-08",
+      "end": "2026-11-12",
+      "dates": "Nov 8–12",
       "family": [
         "Name Night: each person shares the story behind their name.",
         "Start reading The Wild Robot together."
@@ -68,9 +68,9 @@ window.MONTHS[1] = {
       "step": "Practice",
       "title": "Strengths & Struggles",
       "theme": "I'm a good kid, even when I have hard moments.",
-      "start": "2026-11-08",
-      "end": "2026-11-14",
-      "dates": "Nov 8–14",
+      "start": "2026-11-13",
+      "end": "2026-11-17",
+      "dates": "Nov 13–17",
       "family": [
         "Strengths Jar: everyone writes strengths they see in each other. Read them aloud on Sunday."
       ]
@@ -80,9 +80,9 @@ window.MONTHS[1] = {
       "step": "Practice",
       "title": "Roots",
       "theme": "I come from people.",
-      "start": "2026-11-15",
-      "end": "2026-11-21",
-      "dates": "Nov 15–21",
+      "start": "2026-11-18",
+      "end": "2026-11-24",
+      "dates": "Nov 18–24",
       "family": [
         "Movie night: Coco.",
         "Roots wall: pin photos of ancestors to the wall or fridge."
@@ -93,9 +93,9 @@ window.MONTHS[1] = {
       "step": "Teach",
       "title": "My Story",
       "theme": "I'm part of a bigger story, and I get to tell mine.",
-      "start": "2026-11-22",
-      "end": "2026-11-28",
-      "dates": "Nov 22–28 (light week)",
+      "start": "2026-11-25",
+      "end": "2026-11-29",
+      "dates": "Nov 25–29 (Madeira, light week)",
       "family": [
         "Thanksgiving (Thu Nov 26): read Luke 17:11-19. Share one person from our family’s story you’re thankful for."
       ]
@@ -104,8 +104,8 @@ window.MONTHS[1] = {
   "checkins": [
     {
       "n": 1,
-      "date": "2026-11-08",
-      "label": "Sun Nov 8",
+      "date": "2026-11-12",
+      "label": "Thu Nov 12",
       "topic": "Known",
       "questions": [
         "What's something about you that you think most people don't know?",
@@ -115,8 +115,8 @@ window.MONTHS[1] = {
     },
     {
       "n": 2,
-      "date": "2026-11-15",
-      "label": "Sun Nov 15",
+      "date": "2026-11-17",
+      "label": "Tue Nov 17",
       "topic": "Strengths & Struggles",
       "questions": [
         "What's something you're good at that you're proud of?",
@@ -126,8 +126,8 @@ window.MONTHS[1] = {
     },
     {
       "n": 3,
-      "date": "2026-11-22",
-      "label": "Sun Nov 22",
+      "date": "2026-11-23",
+      "label": "Mon Nov 23",
       "topic": "Roots",
       "questions": [
         "What did you learn about our family that surprised you?",
@@ -166,7 +166,7 @@ window.MONTHS[1] = {
         "what": "Show your Me Box (3 favorite things and what they say about you) and your drawing.",
         "length": "1 minute",
         "stretch": "Do it with no grown-up standing next to you, and answer one question from the audience.",
-        "date": "Sun Nov 29"
+        "date": "Thu Nov 26"
       },
       "weeks": {
         "1": [
@@ -201,7 +201,7 @@ window.MONTHS[1] = {
         "what": "Present your Character Sheet like a game-character reveal.",
         "length": "2 minutes",
         "stretch": "Set it up and present it yourself. Use \"try first, then ask\" if you get stuck.",
-        "date": "Sun Nov 29"
+        "date": "Thu Nov 26"
       },
       "weeks": {
         "1": [
@@ -236,7 +236,7 @@ window.MONTHS[1] = {
         "what": "A short talk or slideshow: your top strengths, one value that matters to you, one ancestor, and what ties them together.",
         "length": "3 minutes",
         "stretch": "Present to someone beyond your immediate family (extended family at Thanksgiving, or a recording for grandparents or cousins), then answer follow-up questions.",
-        "date": "Sun Nov 29"
+        "date": "Thu Nov 26"
       },
       "weeks": {
         "1": [
@@ -271,7 +271,7 @@ window.MONTHS[1] = {
         "what": "Your format, your choice: a monologue, an art show, a short film, a song, a scrapbook. The only rule is that the story is true and about you.",
         "length": "Your choice",
         "stretch": "Pick a real audience you choose.",
-        "date": "Sun Nov 29"
+        "date": "Thu Nov 26"
       },
       "weeks": {
         "1": [
@@ -309,6 +309,7 @@ window.MONTHS[1] = {
     "when": "Nov 29–30",
     "text": "Write a letter to yourself, to be opened at the end of Month 12 (Oct 2027). Who am I right now? What am I proud of? What am I scared of? What do I hope will be true a year from now? A parent will seal it and keep it safe."
   },
+  "contentFile": "content/month-01-who-i-am.md",
   "tactics": [
     {
       "key": "god-gratitude",
@@ -326,5 +327,6 @@ window.MONTHS[1] = {
     "lesson": "Be a good person before you are a capable one, and stay who you are under pressure.",
     "quote": "Whatever happens tomorrow, you must promise me one thing. You will stay who you are. Not a perfect soldier, but a good man.",
     "quoteBy": "Dr. Erskine to Steve, Captain America: The First Avenger",
+    "note": "From the hero wisdom notes (quote verified on Wikiquote). The center of the Wisdom Map is Love, and this month is about being known and loved."
   }
 };

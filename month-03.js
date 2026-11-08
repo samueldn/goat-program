@@ -6,6 +6,7 @@ window.MONTHS[3] = {
   start: "2027-01-01",
   end: "2027-01-31",
   dates: "Jan 1 – Jan 31",
+  contentFile: "content/month-03-wild-and-free.md",
   principle: "I can explore, I can handle real things on my own, and I can care for living things.",
   tactics: [
     { key: "phy-nature", role: "lead" },
@@ -21,8 +22,8 @@ window.MONTHS[3] = {
   scriptures: [
     { ref: "Psalm 19:1-4", note: "The heavens declare the glory of God." },
     { ref: "D&C 38:30", note: "If ye are prepared ye shall not fear." },
-    { ref: "Genesis 2:15", note: "To dress it and to keep it (stewardship)." },
-    { ref: "Job 12:7-10", note: "Ask the beasts and the birds, and they will teach you." },
+    { ref: "Genesis 2:15", note: "To dress it and to keep it (stewardship). Please verify." },
+    { ref: "Job 12:7-10", note: "Ask the beasts and the birds, and they will teach you. Please verify." },
   ],
   hero: {
     art: 'aragorn-action',
@@ -31,6 +32,7 @@ window.MONTHS[3] = {
     lesson: "Aragorn lived in the wild for years as a ranger called Strider. He knew how to track, find his way and survive, and he quietly protected people who never knew his name. He was ready long before anyone asked. Being ready is a way of caring about other people.",
     quote: "Not all those who wander are lost.",
     quoteBy: "J.R.R. Tolkien, The Fellowship of the Ring (Bilbo's poem about Strider)",
+    note: "From the hero notes, where the wording is listed as verified (Wikiquote); not checked against the printed book. The line describes Aragorn rather than being spoken by him. The Tolkien films are not made for young kids (I believe PG-13, not verified), so use the character and his story, not the film scenes.",
   },
   familyRead: { title: "My Side of the Mountain", by: "Jean Craighead George", note: "A boy leaves a crowded New York apartment to live on his own in the Catskills with a falcon. Aim to finish by Jan 29. Heads-up: he runs away, and traps, hunts and cooks animals. Preview it." },
   movie: { title: "The Wild Robot", rating: "PG", note: "Family movie night, Week 3. Heads-up: animals hunt and kill each other (mostly off screen), a forest fire, near-death moments. What did Roz learn from the animals?" },

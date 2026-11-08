@@ -6,6 +6,7 @@ window.MONTHS[6] = {
   start: '2027-04-01',
   end: '2027-04-30',
   dates: 'Apr 1 – Apr 30',
+  contentFile: 'content/month-06-feelings-and-repair.md',
   principle: 'Feelings are information. I can name it, feel it, and choose what I do next. When I get it wrong, I can make it right.',
   tactics: [
     { key: 'god-covenants', role: 'lead' },
@@ -20,9 +21,9 @@ window.MONTHS[6] = {
   ],
   scriptures: [
     { ref: 'Revelation 3:19', note: 'Honest correction comes from love.' },
-    { ref: 'Luke 15:11-32', note: 'The prodigal son: a father who runs to meet him.' },
-    { ref: 'D&C 58:42-43', note: 'Forgiven and remembered no more.' },
-    { ref: 'Matthew 5:23-24', note: 'Make peace with someone you have wronged.' },
+    { ref: 'Luke 15:11-32', note: 'The prodigal son: a father who runs to meet him (please verify).' },
+    { ref: 'D&C 58:42-43', note: 'Forgiven and remembered no more (please verify).' },
+    { ref: 'Matthew 5:23-24', note: 'Make peace with someone you have wronged (please verify).' },
   ],
   familyRead: { title: 'Beautiful Oops!', by: 'Barney Saltzberg', note: 'A short picture book about turning a mistake into art. Read it in five minutes; everyone tears or spills something on purpose.' },
   movie: { title: 'Inside Out', rating: 'PG', note: 'Family movie night, Week 1 or 3. Why did Sadness matter? Alternate: Inside Out 2 (PG), better for the older kids. Please preview.' },
@@ -33,6 +34,7 @@ window.MONTHS[6] = {
     lesson: 'Obi-Wan failed to save his friend, and it broke his heart. But failing did not cancel his love. He kept faith, kept doing what he still could, and passed on what he learned. Failure is not the end of the story.',
     quote: 'You were my brother, Anakin. I loved you.',
     quoteBy: 'Obi-Wan, Revenge of the Sith (via Wikiquote)',
+    note: 'Quote is tagged Verified in the hero-wisdom notes (via Wikiquote). Revenge of the Sith is PG-13 and dark, so use the idea and the quote with the kids, not the film. Alternates: Zuko from Avatar: The Last Airbender (a redemption arc; no quote verified), or, for parents only, Dalinar ("If I must fall, I will rise each time a better man", Likely, not fully verified; adult fantasy).',
   },
 
   weeks: [

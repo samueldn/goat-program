@@ -18,11 +18,8 @@
   <script src="month-04.js"></script>
   <script src="month-05.js"></script>
   <script src="month-06.js"></script>
-  <script src="wisdom-map.js"></script>
   <script src="scriptures.js"></script>
-  <script src="wisdom-cards.js"></script>
   <script src="mascots.js"></script>
-  <script src="heroes.js"></script>
   <script>
     const C = window.CURRICULUM;
     const MONTHS = window.MONTHS;
@@ -146,6 +143,12 @@
             </a>`).join('')}
         </div>
 
+        <div class="section-title">For parents</div>
+        <a class="guide-card" href="${C.guideUrl}?month=${cur}" data-month="${cur}">
+          <span class="emoji">📘</span>
+          <div><strong>Parents' Guide</strong><span>Month ${cur}: ${MONTHS[cur].title}. Kickoff, check-in questions, and sources</span></div>
+        </a>
+
         <div class="section-title">The 18-month path</div>
         ${roadmapHtml(cur)}
         <p class="footnote">Progress isn't saved yet. That's coming next.</p>
@@ -210,6 +213,7 @@
       app.innerHTML = `
         <div class="topbar">
           <a class="back" href="#/">← Everyone</a>
+          <a class="guide-link" href="${C.guideUrl}?month=${n}" data-month="${n}">📘 Parents' Guide</a>
         </div>
 
         <div class="kid-hero">
@@ -246,8 +250,6 @@
           </div>
           <h3>Scriptures to explore</h3>
           <div class="scripture-grid">${scriptureBoxes(M)}</div>
-          ${wisdomHtml(M)}
-          ${heroHtml(M)}
           <div class="two">
             <div class="mini"><div class="label">Read together</div><div class="title">${M.familyRead.title}</div><div class="muted">${M.familyRead.by}. ${M.familyRead.note}</div></div>
             <div class="mini"><div class="label">Your book</div><div class="title">${k.book.title}</div><div class="muted">${k.book.by}. ${k.book.alt}</div></div>
@@ -312,6 +314,11 @@
       e.preventDefault();
       document.getElementById(a.dataset.jump)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+
+    document.addEventListener('click', e => {
+      const a = e.target.closest && e.target.closest('a[data-month]');
+      if (a) { try { localStorage.setItem('goat-guide-month', a.dataset.month); } catch (err) {} }
+    }, true);
 
     window.addEventListener('hashchange', route);
     route();

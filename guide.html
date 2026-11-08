@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parents' Guide · The Goat Program</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .wrap { --accent: #7c3aed; --soft: #f5f0ff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .wrap { --soft: #2a2238; } }
+    .quote { font-style: italic; border-left: 4px solid var(--accent); padding: 0.4rem 0.9rem; margin: 0.6rem 0; background: var(--soft); border-radius: 0 10px 10px 0; }
+    .coach { font-weight: 700; color: var(--muted); font-size: 0.92rem; margin-bottom: 0.6rem; }
+    .sub { font-size: 0.72rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 0.9rem 0 0.35rem; }
+    .kidtasks details { border: 2px solid var(--border); border-radius: 10px; padding: 0.5rem 0.8rem; margin-top: 0.4rem; }
+    .kidtasks summary { font-weight: 800; cursor: pointer; }
+    .kidtasks ul { margin-top: 0.4rem; padding-left: 1.1rem; list-style: disc; font-size: 0.92rem; }
+    .kidtasks .pick { color: var(--accent); font-weight: 800; font-size: 0.82rem; }
+    .ref { border: 2px solid var(--border); border-radius: 12px; padding: 0.7rem 1rem; margin-top: 0.6rem; background: var(--card); }
+    .ref summary { font-weight: 900; cursor: pointer; }
+    .ref .body { margin-top: 0.6rem; }
+    .ref h4 { font-size: 1rem; font-weight: 900; margin: 1.1rem 0 0.3rem; }
+    .ref p, .ref li { margin: 0.35rem 0; }
+    .ref ul, .ref ol { padding-left: 1.3rem; list-style: revert; }
+    .ref a { color: var(--accent); font-weight: 700; }
+    .ref blockquote { border-left: 4px solid var(--accent); padding: 0.3rem 0.9rem; margin: 0.6rem 0; background: var(--soft); border-radius: 0 10px 10px 0; }
+    .ref-note { font-weight: 600; color: var(--muted); font-size: 0.85rem; margin-top: 0.6rem; }
+    .kid-note { border-left: 6px solid var(--k); }
+    .kid-note h3 { color: var(--k); }
+    .full-guide { display: block; margin-top: 1rem; text-align: center; font-weight: 800; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app"></div>
+  <script src="data.js"></script>
+  <script src="month-01.js"></script>
+  <script src="month-02.js"></script>
+  <script src="month-03.js"></script>
+  <script src="month-04.js"></script>
+  <script src="month-05.js"></script>
+  <script src="month-06.js"></script>
+  <script src="guide-01.js"></script>
+  <script src="guide-02.js"></script>
+  <script src="guide-03.js"></script>
+  <script src="guide-04.js"></script>
+  <script src="guide-05.js"></script>
+  <script src="guide-06.js"></script>
+  <script src="mascots.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+  <script>
+    const C = window.CURRICULUM;
+    const fromQuery = Number(new URLSearchParams(location.search).get('month'));
+    const fromHash = Number((location.hash.match(/month-(\d+)/) || [])[1]);
+    let remembered = 0;
+    try { remembered = Number(localStorage.getItem('goat-guide-month')); } catch (err) {}
+    const monthNum = fromQuery || fromHash || remembered || 1;
+    const M = window.MONTHS[monthNum] || window.MONTHS[1];
+    const G = window.GUIDES[M.n];
+    const app = document.getElementById('app');
+    const kids = Object.values(C.kids).map(k => ({ ...k, ...M.kids[k.id] }));
+
+    const parseDate = s => new Date(s + 'T00:00:00');
+    const today = () => {
+      const o = new URLSearchParams(location.search).get('today');
+      return o ? parseDate(o) : new Date(new Date().toDateString());
+    };
+    const currentWeek = () => {
+      const t = today();
+      return M.weeks.find(w => t >= parseDate(w.start) && t <= parseDate(w.end))?.n ?? null;
+    };
+
+    const esc = t => String(t).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
+    const BRANCH_COLOR = C.branchColors;
+    const hasKidNotes = !!(G.kidNotes && Object.keys(G.kidNotes).length);
+
+    function readingCard() {
+      if (!G.readings || !G.readings.length) return '';
+      return `
+        <section class="card" id="reading">
+          <h2>Your reading this month</h2>
+          <ul style="padding-left:1.2rem;list-style:disc">${G.readings.map(r => `<li>${esc(r)}</li>`).join('')}</ul>
+        </section>`;
+    }
+
+    function chapterReviewCard() {
+      const c = G.chapterReview;
+      if (!c) return '';
+      return `
+        <section class="card" id="chapter">
+          <h2>${c.title}</h2>
+          <p class="muted" style="margin-bottom:0.5rem">${c.note}</p>
+          ${checklist(c.items)}
+        </section>`;
+    }
+
+    let uid = 0;
+    const checklist = items => `
+      <ul class="tasks">
+        ${items.map(t => { const id = 'c' + (uid++); return `
+          <li class="task"><input type="checkbox" id="${id}" /><label for="${id}">${t}</label></li>`; }).join('')}
+      </ul>`;
+
+    function kidTasks(weekN) {
+      return `<div class="kidtasks"><div class="sub">What each kid is doing</div>
+        ${kids.map(k => `
+          <details>
+            <summary><span class="mini-mascot">${Mascot.svg(k.id, {small:true})}</span>${k.name}</summary>
+            ${k.menu && k.weeks[weekN].length >= 4 ? '<div class="pick">Menu: she picks any 3 of 5</div>' : ''}
+            <ul>${k.weeks[weekN].map(t => `<li>${t}</li>`).join('')}</ul>
+          </details>`).join('')}
+      </div>`;
+    }
+
+    function weekCard(w) {
+      const cw = currentWeek();
+      const g = G.weeks[w.n];
+      const ci = M.checkins[w.n - 1];
+      const timing = g.parent.filter(p => /check-?in/i.test(p));
+      const rest = g.parent.filter(p => !/check-?in/i.test(p));
+      const checkinItems = kids.map(k => k.id === 'indiana'
+        ? `Offer Indiana her check-in (${ci.label}). Her call on when, where and whether.`
+        : `Check-in with ${k.name} (${ci.label}): ${ci.topic}`);
+      return `
+        <div class="week ${cw === w.n ? 'current' : ''}" id="week${w.n}">
+          <div class="week-head">
+            <div class="week-num">${w.n}</div>
+            <div><div class="t">${w.title}</div><div class="d">${w.dates}</div></div>
+            ${cw === w.n ? '<span class="now">This week</span>' : ''}
+          </div>
+          <div class="week-body">
+            <div class="theme-line">${w.theme}</div>
+            <div class="coach">Coaching note: ${g.coach}</div>
+
+            <div class="sub">Your checklist</div>
+            ${checklist([...rest, ...checkinItems])}
+
+            <details class="ci-guide">
+              <summary>Check-in ${ci.n}: ${ci.topic} <span>${ci.label}</span></summary>
+              ${timing.length ? `<p class="muted" style="margin-top:0.5rem">${timing.join(' ')}</p>` : ''}
+              <div class="sub">Questions (pick 2 or 3)</div>
+              <ul class="ci-q">${ci.questions.map(q => `<li>${q}</li>`).join('')}</ul>
+              <div class="sub">Say this</div>
+              <div class="quote">${G.magnitude[ci.n]}</div>
+            </details>
+
+            ${kidTasks(w.n)}
+
+            <details class="family">
+              <summary>Family extras (optional)</summary>
+              <ul>${w.family.map(f => `<li>${f}</li>`).join('')}</ul>
+            </details>
+          </div>
+        </div>`;
+    }
+
+    function render() {
+      app.innerHTML = `
+        <div class="topbar">
+          <a class="back" href="index.html">← Back to kids</a>
+        </div>
+
+        <div class="kid-hero" style="--soft:#f5f0ff">
+          <div class="emoji">📘</div>
+          <div><h1>Parents' Guide</h1><p>Month ${M.n}: ${M.title} · ${M.dates}</p></div>
+        </div>
+
+        <div class="months">
+          ${C.roadmap.filter(r => !r.isBreak).map(r => window.MONTHS[r.n]
+            ? `<a class="chip ${r.n === M.n ? 'active' : ''}" href="guide.html?month=${r.n}" data-month="${r.n}">Month ${r.n}</a>`
+            : `<button class="chip disabled" disabled>Month ${r.n} · soon</button>`).join('')}
+        </div>
+
+        <nav class="nav">
+          ${G.readings && G.readings.length ? '<a href="#reading">Reading</a>' : ''}
+          <a href="#prep">${G.prep.title}</a>
+          <a href="#kickoff">Kickoff</a>
+          <a href="#week1">Week 1</a>
+          <a href="#week2">Week 2</a>
+          <a href="#week3">Week 3</a>
+          <a href="#week4">Week 4</a>
+          <a href="#day">Challenge day</a>
+          ${hasKidNotes ? '<a href="#kids">Each kid</a>' : ''}
+          <a href="#reference">Reference</a>
+        </nav>
+
+        <section class="card">
+          <h2>The idea</h2>
+          <p class="big-idea">${M.principle}</p>
+          <p>${G.why}</p>
+          <p class="muted" style="margin-top:0.6rem">${G.structureNote}</p>
+        </section>
+
+        ${readingCard()}
+
+        <section class="card" id="prep">
+          <h2>${G.prep.title}</h2>
+          ${checklist(G.prep.items)}
+        </section>
+
+        <section class="card" id="kickoff">
+          <h2>${G.kickoff.title}</h2>
+          <p class="muted" style="margin-bottom:0.5rem">${G.kickoff.note}</p>
+          ${checklist(G.kickoff.items)}
+        </section>
+
+        <section>
+          <div class="section-title">Week by week</div>
+          <p class="muted">${G.checkinFormat}</p>
+          ${M.weeks.map(weekCard).join('')}
+        </section>
+
+        <section class="card" id="letter">
+          <h2>${G.gift.emoji} ${G.gift.title}</h2>
+          <p class="muted" style="margin-bottom:0.5rem">${G.gift.note}</p>
+          ${checklist(G.gift.checklist)}
+          <div class="sub">${G.gift.includeTitle}</div>
+          <ol style="padding-left:1.3rem">${G.gift.items.map(i => `<li>${i}</li>`).join('')}</ol>
+        </section>
+
+        <section class="card" id="day">
+          <h2>${G.challengeDay.title}</h2>
+          ${checklist(G.challengeDay.items)}
+          <div class="sub">Each kid's challenge</div>
+          <div class="kidtasks">
+            ${kids.map(k => `
+              <details>
+                <summary><span class="mini-mascot">${Mascot.svg(k.id, {small:true})}</span>${k.name}: ${k.challenge.length}</summary>
+                <ul>
+                  <li><strong>What:</strong> ${k.challenge.what}</li>
+                  <li><strong>The stretch:</strong> ${k.challenge.stretch}</li>
+                </ul>
+              </details>`).join('')}
+          </div>
+        </section>
+
+        ${hasKidNotes ? `        <section id="kids">
+          <div class="section-title">Notes on each kid</div>
+          ${kids.map(k => `
+            <div class="card kid-note" style="--k:${k.accent}">
+              <h3><span class="mini-mascot">${Mascot.svg(k.id, {small:true})}</span>${k.name} (${k.age})</h3>
+              <p style="margin-top:0.3rem">${G.kidNotes[k.id]}</p>
+              <div class="sub">Check-in tip</div>
+              <p>${G.tips[k.id]}</p>
+            </div>`).join('')}
+        </section>` : ''}
+
+        ${chapterReviewCard()}
+
+        <section id="reference">
+          <div class="section-title">Reference</div>
+          <div id="ref-list"><p class="muted">Loading reference material…</p></div>
+          <a class="full-guide" href="${M.contentFile}" target="_blank" rel="noopener">Open the full guide as a plain document</a>
+        </section>
+
+        <p class="footnote">Progress isn't saved yet. That's coming next.</p>
+      `;
+    }
+
+    function loadReference() {
+      const list = document.getElementById('ref-list');
+      fetch(M.contentFile)
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+        .then(md => {
+          const sections = {};
+          const parts = md.split(/^### /m).slice(1);
+          for (const p of parts) {
+            const nl = p.indexOf('\n');
+            sections[p.slice(0, nl).trim()] = p.slice(nl + 1).trim();
+          }
+          list.innerHTML = G.referenceSections.map(name => {
+            const body = sections[name];
+            if (!body) return '';
+            return `<details class="ref"><summary>${name}</summary><div class="body">${marked.parse(body)}</div></details>`;
+          }).join('');
+          list.querySelectorAll('a[href^="http"]').forEach(a => { a.target = '_blank'; a.rel = 'noopener'; });
+        })
+        .catch(() => {
+          list.innerHTML = '<p class="ref-note">Reference sections load from the content file. Open this page through the dev server (npm run dev, then /curriculum/guide.html). Browsers block loading local files directly.</p>';
+        });
+    }
+
+    document.addEventListener('click', e => {
+      const a = e.target.closest && e.target.closest('a[data-month]');
+      if (a) { try { localStorage.setItem('goat-guide-month', a.dataset.month); } catch (err) {} }
+    }, true);
+
+    render();
+    loadReference();
+  </script>
+</body>
+</html>
