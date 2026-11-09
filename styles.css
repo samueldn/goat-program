@@ -532,3 +532,40 @@ h1, h2, .hero .title { font-family: var(--display); font-weight: 400; text-trans
 .task-ci label b { display: block; }
 .task-ci label span { display: block; font-size: 0.82rem; font-weight: 700; color: var(--muted); }
 .task-ci label a { color: var(--accent); font-weight: 900; }
+
+/* Progress saving and sync */
+.home-sync { display: flex; justify-content: flex-end; margin-bottom: 0.25rem; }
+.topbar { flex-wrap: wrap; gap: 0.5rem; }
+.sync { position: relative; }
+.sync-pill {
+  border: 3px solid var(--ink); border-radius: 99px; padding: 0.35rem 0.85rem; background: #fff;
+  font-weight: 900; font-size: 0.8rem; box-shadow: 3px 3px 0 var(--ink); cursor: pointer;
+}
+.sync-pill:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.sync-pill.s-synced { background: #d7f7c2; }
+.sync-pill.s-syncing { background: #fff3b0; }
+.sync-pill.s-offline { background: #ffe2c2; }
+.sync-pill.s-error { background: #ffc9c9; }
+.sync-panel {
+  position: absolute; right: 0; top: calc(100% + 0.6rem); z-index: 20; width: min(330px, 86vw);
+  display: grid; gap: 0.6rem; padding: 0.85rem;
+  background: #fff; border: 3px solid var(--ink); border-radius: 12px; box-shadow: 5px 5px 0 var(--ink);
+}
+.sync-panel[hidden] { display: none; }
+.sync-note { font-size: 0.85rem; font-weight: 700; color: var(--ink); }
+.sync-panel form { display: flex; gap: 0.4rem; }
+.sync-panel input { flex: 1; min-width: 0; font: inherit; padding: 0.4rem 0.6rem; border: 3px solid var(--ink); border-radius: 8px; }
+.sync-panel form button { font-weight: 900; padding: 0.4rem 0.9rem; border: 3px solid var(--ink); border-radius: 8px; background: #ffd23f; box-shadow: 2px 2px 0 var(--ink); }
+.link-btn { text-align: left; font-weight: 800; font-size: 0.82rem; color: var(--accent, #2563eb); text-decoration: underline; }
+
+.mini-progress { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; font-size: 0.78rem; font-weight: 800; color: var(--muted); }
+.mini-progress .bar { flex: 1; height: 11px; border: 2px solid var(--ink); border-radius: 99px; background: #fff; overflow: hidden; }
+.mini-progress .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.4s ease; }
+.kid-card .mini-progress { justify-content: center; margin: 0.5rem 0 0.2rem; }
+.kid-card .mini-progress .bar { max-width: 120px; }
+.wk-count { margin-left: 0.4rem; padding: 0.05rem 0.55rem; font-size: 0.8rem; font-weight: 900; color: var(--ink); background: #fff; border: 2px solid var(--ink); border-radius: 99px; }
+.wk-count.complete { background: #d7f7c2; }
+
+.prog-row { display: flex; align-items: center; gap: 0.75rem; margin: 0.45rem 0; }
+.prog-name { display: flex; align-items: center; min-width: 7.5rem; font-weight: 900; }
+.prog-row .mini-progress { flex: 1; margin-top: 0; }

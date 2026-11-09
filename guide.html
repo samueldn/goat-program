@@ -48,6 +48,7 @@
   <script src="guide-05.js"></script>
   <script src="guide-06.js"></script>
   <script src="mascots.js"></script>
+  <script src="progress.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
   <script>
     const C = window.CURRICULUM;
@@ -91,16 +92,58 @@
         <section class="card" id="chapter">
           <h2>${c.title}</h2>
           <p class="muted" style="margin-bottom:0.5rem">${c.note}</p>
-          ${checklist(c.items)}
+          ${checklist(c.items, 'chapter')}
         </section>`;
     }
 
-    let uid = 0;
-    const checklist = items => `
+    const checklist = (items, scope) => `
       <ul class="tasks">
-        ${items.map(t => { const id = 'c' + (uid++); return `
-          <li class="task"><input type="checkbox" id="${id}" /><label for="${id}">${t}</label></li>`; }).join('')}
+        ${items.map((it, i) => {
+          const text = typeof it === 'string' ? it : it.text;
+          const field = typeof it === 'string' ? `parent|m${M.n}|${scope}-${i}` : it.field;
+          const id = `gp-m${M.n}-${scope}-${i}`;
+          return `
+          <li class="task"><input type="checkbox" id="${id}" data-field="${field}" /><label for="${id}">${text}</label></li>`;
+        }).join('')}
       </ul>`;
+
+    function guideWeekTotals(k, w) {
+      const tasks = k.weeks[w.n];
+      const need = (k.menu && tasks.length >= 4) ? Math.min(3, tasks.length) : tasks.length;
+      let ticked = 0;
+      tasks.forEach((t, i) => { if (Progress.isDone(`${k.id}|m${M.n}w${w.n}t${i}`)) ticked++; });
+      let total = need, done = Math.min(ticked, need);
+      if (M.checkins[w.n - 1]) { total++; if (Progress.isDone(`${k.id}|m${M.n}w${w.n}ci`)) done++; }
+      return { done, total };
+    }
+
+    function guideMonthTotals(k) {
+      let done = 0, total = 0;
+      M.weeks.forEach(w => { const t = guideWeekTotals(k, w); done += t.done; total += t.total; });
+      return { done, total };
+    }
+
+    function updateBars() {
+      document.querySelectorAll('[data-bar="month"]').forEach(el => {
+        const k = kids.find(x => x.id === el.dataset.kid);
+        const t = guideMonthTotals(k);
+        el.querySelector('i').style.width = (t.total ? Math.round(100 * t.done / t.total) : 0) + '%';
+        el.querySelector('span').textContent = `${t.done} of ${t.total} done`;
+      });
+    }
+
+    function progressCard() {
+      return `
+        <section class="card" id="progress">
+          <h2>Progress this month</h2>
+          <p class="muted" style="margin-bottom:0.5rem">What each kid has ticked off, including their check-in with you.</p>
+          ${kids.map(k => `
+            <div class="prog-row" style="--accent:${k.accent}">
+              <div class="prog-name"><span class="mini-mascot">${Mascot.svg(k.id, {small:true})}</span>${k.name}</div>
+              <div class="mini-progress" data-bar="month" data-kid="${k.id}" data-month="${M.n}"><div class="bar"><i></i></div><span></span></div>
+            </div>`).join('')}
+        </section>`;
+    }
 
     function kidTasks(weekN) {
       return `<div class="kidtasks"><div class="sub">What each kid is doing</div>
@@ -119,9 +162,12 @@
       const ci = M.checkins[w.n - 1];
       const timing = g.parent.filter(p => /check-?in/i.test(p));
       const rest = g.parent.filter(p => !/check-?in/i.test(p));
-      const checkinItems = kids.map(k => k.id === 'indiana'
-        ? `Offer Indiana her check-in (${ci.label}). Her call on when, where and whether.`
-        : `Check-in with ${k.name} (${ci.label}): ${ci.topic}`);
+      const checkinItems = kids.map(k => ({
+        text: k.id === 'indiana'
+          ? `Offer Indiana her check-in (${ci.label}). Her call on when, where and whether.`
+          : `Check-in with ${k.name} (${ci.label}): ${ci.topic}`,
+        field: `${k.id}|m${M.n}w${w.n}ci`,
+      }));
       return `
         <div class="week ${cw === w.n ? 'current' : ''}" id="week${w.n}">
           <div class="week-head">
@@ -134,7 +180,7 @@
             <div class="coach">Coaching note: ${g.coach}</div>
 
             <div class="sub">Your checklist</div>
-            ${checklist([...rest, ...checkinItems])}
+            ${checklist([...rest, ...checkinItems], `w${w.n}`)}
 
             <details class="ci-guide">
               <summary>Check-in ${ci.n}: ${ci.topic} <span>${ci.label}</span></summary>
@@ -159,6 +205,7 @@
       app.innerHTML = `
         <div class="topbar">
           <a class="back" href="index.html">← Back to kids</a>
+          ${Progress.barHtml()}
         </div>
 
         <div class="kid-hero" style="--soft:#f5f0ff">
@@ -192,17 +239,19 @@
           <p class="muted" style="margin-top:0.6rem">${G.structureNote}</p>
         </section>
 
+        ${progressCard()}
+
         ${readingCard()}
 
         <section class="card" id="prep">
           <h2>${G.prep.title}</h2>
-          ${checklist(G.prep.items)}
+          ${checklist(G.prep.items, 'prep')}
         </section>
 
         <section class="card" id="kickoff">
           <h2>${G.kickoff.title}</h2>
           <p class="muted" style="margin-bottom:0.5rem">${G.kickoff.note}</p>
-          ${checklist(G.kickoff.items)}
+          ${checklist(G.kickoff.items, 'kick')}
         </section>
 
         <section>
@@ -214,14 +263,14 @@
         <section class="card" id="letter">
           <h2>${G.gift.emoji} ${G.gift.title}</h2>
           <p class="muted" style="margin-bottom:0.5rem">${G.gift.note}</p>
-          ${checklist(G.gift.checklist)}
+          ${checklist(G.gift.checklist, 'gift')}
           <div class="sub">${G.gift.includeTitle}</div>
           <ol style="padding-left:1.3rem">${G.gift.items.map(i => `<li>${i}</li>`).join('')}</ol>
         </section>
 
         <section class="card" id="day">
           <h2>${G.challengeDay.title}</h2>
-          ${checklist(G.challengeDay.items)}
+          ${checklist(G.challengeDay.items, 'day')}
           <div class="sub">Each kid's challenge</div>
           <div class="kidtasks">
             ${kids.map(k => `
@@ -254,7 +303,6 @@
           <a class="full-guide" href="${M.contentFile}" target="_blank" rel="noopener">Open the full guide as a plain document</a>
         </section>
 
-        <p class="footnote">Progress isn't saved yet. That's coming next.</p>
       `;
     }
 
@@ -286,7 +334,10 @@
       if (a) { try { localStorage.setItem('goat-guide-month', a.dataset.month); } catch (err) {} }
     }, true);
 
+    window.addEventListener('goat:progress', updateBars);
     render();
+    Progress.afterRender();
+    updateBars();
     loadReference();
   </script>
 </body>

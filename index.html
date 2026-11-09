@@ -20,6 +20,7 @@
   <script src="month-06.js"></script>
   <script src="scriptures.js"></script>
   <script src="mascots.js"></script>
+  <script src="progress.js"></script>
   <script>
     const C = window.CURRICULUM;
     const MONTHS = window.MONTHS;
@@ -122,10 +123,51 @@
       return w ? `Week ${w.n}: ${w.title}. You've got this, ${k.name}!` : `Keep going, ${k.name}!`;
     }
 
+    function kidTasksFor(kidId, n) {
+      const M = MONTHS[n];
+      return { M, k: { ...C.kids[kidId], ...M.kids[kidId] } };
+    }
+
+    function weekTotals(kidId, n, w) {
+      const { M, k } = kidTasksFor(kidId, n);
+      const tasks = k.weeks[w.n];
+      const need = (k.menu && tasks.length >= 4) ? Math.min(3, tasks.length) : tasks.length;
+      let ticked = 0;
+      tasks.forEach((t, i) => { if (Progress.isDone(`${kidId}|m${n}w${w.n}t${i}`)) ticked++; });
+      let total = need, done = Math.min(ticked, need);
+      if (M.checkins[w.n - 1]) { total++; if (Progress.isDone(`${kidId}|m${n}w${w.n}ci`)) done++; }
+      return { done, total };
+    }
+
+    function monthTotals(kidId, n) {
+      let done = 0, total = 0;
+      MONTHS[n].weeks.forEach(w => { const t = weekTotals(kidId, n, w); done += t.done; total += t.total; });
+      return { done, total };
+    }
+
+    function progressBar(kidId, n) {
+      return `<div class="mini-progress" data-bar="month" data-kid="${kidId}" data-month="${n}"><div class="bar"><i></i></div><span></span></div>`;
+    }
+
+    function updateBars() {
+      document.querySelectorAll('[data-bar="month"]').forEach(el => {
+        const t = monthTotals(el.dataset.kid, Number(el.dataset.month));
+        el.querySelector('i').style.width = (t.total ? Math.round(100 * t.done / t.total) : 0) + '%';
+        el.querySelector('span').textContent = `${t.done} of ${t.total} done`;
+      });
+      document.querySelectorAll('[data-bar="week"]').forEach(el => {
+        const w = MONTHS[Number(el.dataset.month)].weeks.find(x => x.n === Number(el.dataset.week));
+        const t = weekTotals(el.dataset.kid, Number(el.dataset.month), w);
+        el.textContent = `${t.done}/${t.total}`;
+        el.classList.toggle('complete', t.total > 0 && t.done >= t.total);
+      });
+    }
+
     function renderHome() {
       document.title = C.programName;
       const cur = currentMonthNum();
       app.innerHTML = `
+        <div class="home-sync">${Progress.barHtml()}</div>
         <header class="hero">
           <div class="hero-goat">${Mascot.svg('goat')}</div>
           <h1 class="title">The <span>Goat</span> Program</h1>
@@ -139,6 +181,7 @@
               <h2>${k.name}</h2>
               <p>${k.tagline}</p>
               <div class="hat-hint">Tap the hat to change it!</div>
+              ${progressBar(k.id, cur)}
               <div class="go">Open my path →</div>
             </a>`).join('')}
         </div>
@@ -151,7 +194,6 @@
 
         <div class="section-title">The 18-month path</div>
         ${roadmapHtml(cur)}
-        <p class="footnote">Progress isn't saved yet. That's coming next.</p>
       `;
     }
 
@@ -177,6 +219,7 @@
               <div class="week-num">${w.n}</div>
               <div><div class="t">${w.title}</div><div class="d">${w.dates}</div></div>
               ${w.step ? `<span class="step">${w.step}</span>` : ''}
+              <span class="wk-count" data-bar="week" data-kid="${k.id}" data-month="${n}" data-week="${w.n}"></span>
               ${cw === w.n ? '<span class="now">This week</span>' : ''}
             </div>
             <div class="week-body">
@@ -185,7 +228,7 @@
               <ul class="tasks">
                 ${tasks.map((t, i) => `
                   <li class="task">
-                    <input type="checkbox" id="m${n}w${w.n}t${i}" />
+                    <input type="checkbox" id="m${n}w${w.n}t${i}" data-field="${k.id}|m${n}w${w.n}t${i}" />
                     <label for="m${n}w${w.n}t${i}">${t}</label>
                   </li>`).join('')}
               </ul>
@@ -194,7 +237,7 @@
                 if (!ci) return '';
                 return `<ul class="tasks tasks-ci">
                   <li class="task task-ci">
-                    <input type="checkbox" id="m${n}w${w.n}ci" />
+                    <input type="checkbox" id="m${n}w${w.n}ci" data-field="${k.id}|m${n}w${w.n}ci" />
                     <label for="m${n}w${w.n}ci"><b>Check-in with a parent${k.menu ? ' (your call)' : ''}</b><span>${ci.label} · ${ci.topic} · <a href="#" data-jump="checkins">see the questions</a></span></label>
                   </li>
                 </ul>`;
@@ -213,6 +256,7 @@
       app.innerHTML = `
         <div class="topbar">
           <a class="back" href="#/">← Everyone</a>
+          ${Progress.barHtml()}
           <a class="guide-link" href="${C.guideUrl}?month=${n}" data-month="${n}">📘 Parents' Guide</a>
         </div>
 
@@ -221,6 +265,7 @@
           <div class="bubble">
             <h1>${k.name}'s Path</h1>
             <p class="say">${heroSay(k, M, state, cw)}</p>
+            ${progressBar(k.id, n)}
             <p class="hat-line">Tap my hat to change it! Now wearing: <span data-hat-name="${k.id}">${Mascot.hatName(k.id)}</span></p>
           </div>
         </div>
@@ -292,12 +337,11 @@
           <h2>🏅 Earn ${M.badge}</h2>
           <ul class="tasks">
             ${M.earn.map((e, i) => `
-              <li class="task"><input type="checkbox" id="m${n}e${i}" /><label for="m${n}e${i}">${e}</label></li>`).join('')}
+              <li class="task"><input type="checkbox" id="m${n}e${i}" data-field="${k.id}|m${n}e${i}" /><label for="m${n}e${i}">${e}</label></li>`).join('')}
           </ul>
           <p class="muted" style="margin-top:0.8rem">${M.ceremony}</p>
         </section>
 
-        <p class="footnote">Progress isn't saved yet. That's coming next.</p>
       `;
       window.scrollTo(0, 0);
     }
@@ -306,7 +350,11 @@
       const m = location.hash.match(/^#\/kid\/(\w+)(?:\/(\d+))?/);
       app.removeAttribute('style');
       if (m) renderKid(m[1], m[2] ? Number(m[2]) : currentMonthNum()); else renderHome();
+      Progress.afterRender();
+      updateBars();
     }
+
+    window.addEventListener('goat:progress', updateBars);
 
     document.addEventListener('click', e => {
       const a = e.target.closest && e.target.closest('a[data-jump]');
