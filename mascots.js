@@ -187,23 +187,60 @@
       <g class="bob">${parts}${lines}${nostrils}${brows}${eyes}${mouth}${slot}</g></svg>`;
   }
 
+  function paintHat(kid, hat, pop) {
+    document.querySelectorAll(`svg.mascot[data-kid="${kid}"]`).forEach(el => {
+      const inner = el.querySelector('.hat-inner');
+      if (!inner) return;
+      const slot = el.querySelector('.hat-slot, .hat-static');
+      inner.innerHTML = inkHat(hat);
+      if (slot && slot.classList.contains('hat-slot')) slot.setAttribute('aria-label', `Change hat. Now wearing: ${hat.name}`);
+      if (pop) {
+        inner.classList.remove('pop');
+        void inner.getBoundingClientRect();
+        inner.classList.add('pop');
+      }
+    });
+    document.querySelectorAll(`[data-hat-name="${kid}"]`).forEach(el => { el.textContent = hat.name; });
+  }
+
   function cycle(kid) {
     const saved = loadHats();
     const current = HATS.findIndex(h => h.id === (saved[kid] || DEFAULT_HAT[kid]));
     const next = HATS[(current + 1) % HATS.length];
     saved[kid] = next.id;
     saveHats(saved);
-    document.querySelectorAll(`svg.mascot[data-kid="${kid}"]`).forEach(el => {
-      const inner = el.querySelector('.hat-inner');
-      const slot = el.querySelector('.hat-slot, .hat-static');
-      inner.innerHTML = inkHat(next);
-      if (slot && slot.classList.contains('hat-slot')) slot.setAttribute('aria-label', `Change hat. Now wearing: ${next.name}`);
-      inner.classList.remove('pop');
-      void inner.getBoundingClientRect();
-      inner.classList.add('pop');
-    });
-    document.querySelectorAll(`[data-hat-name="${kid}"]`).forEach(el => { el.textContent = next.name; });
+    paintHat(kid, next, true);
+    if (window.Progress) window.Progress.set('hat|' + kid, next.id);
   }
+
+  // hats chosen on another device arrive through the synced progress data
+  function applySyncedHats() {
+    if (!window.Progress) return;
+    const saved = loadHats();
+    let changed = false;
+    for (const kid of Object.keys(DEFAULT_HAT)) {
+      const v = window.Progress.get('hat|' + kid);
+      const hat = v && HATS.find(h => h.id === v);
+      if (hat && (saved[kid] || DEFAULT_HAT[kid]) !== hat.id) {
+        saved[kid] = hat.id;
+        changed = true;
+        paintHat(kid, hat, true);
+      }
+    }
+    if (changed) saveHats(saved);
+  }
+
+  // hats picked on this device before syncing existed get uploaded once
+  function seedSyncedHats() {
+    if (!window.Progress) return;
+    const saved = loadHats();
+    for (const kid of Object.keys(saved)) {
+      if (DEFAULT_HAT[kid] && window.Progress.get('hat|' + kid) == null) window.Progress.set('hat|' + kid, saved[kid]);
+    }
+  }
+
+  window.addEventListener('goat:progress', applySyncedHats);
+  window.addEventListener('DOMContentLoaded', () => { seedSyncedHats(); applySyncedHats(); });
 
   document.addEventListener('click', e => {
     const slot = e.target.closest && e.target.closest('.hat-slot');

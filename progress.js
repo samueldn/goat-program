@@ -140,5 +140,5 @@
   window.addEventListener('online', sync);
   window.addEventListener('DOMContentLoaded', () => { apply(); updateUI(); sync(); });
 
-  window.Progress = { isDone, set, apply, sync, barHtml: panelHtml, status: () => status, afterRender: () => { apply(); updateUI(); } };
+  window.Progress = { isDone, get: f => (state[f] ? state[f].v : null), set, apply, sync, barHtml: panelHtml, status: () => status, afterRender: () => { apply(); updateUI(); } };
 })();
